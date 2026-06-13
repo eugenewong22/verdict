@@ -1,0 +1,12 @@
+{
+  "name": "verdict-notary-sidecar",
+  "version": "0.1.0",
+  "description": "Terminal 3 notary sidecar — Ed25519 agent identity, signing, and mandate gate over HTTP. Zero runtime deps.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "optionalDependencies": {
+    "@terminal3/t3n-sdk": "^3.5.2"
+  }
+}

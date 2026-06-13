@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Verdict — Analyst War Room</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0b0e; --panel:#0d0f15; --head:#0c0e14; --head2:#0b0d12; --inset:#12141c;
+    --line:#20242f; --line-faint:#191c25; --line-2:#14171f; --line-muted:#2a2f3b;
+    --text:#cfd4de; --strong:#e8ecf2; --strong2:#eef1f5; --muted:#9aa2b2; --dim:#8b93a3;
+    --faint:#6b7385; --faint2:#5b6273; --ghost:#454b59;
+    --green:#35d07f; --green-soft:#7ee3ad; --amber:#e8b84b; --red:#ef5d5d; --red-soft:#ef9d9d;
+    --blue:#5b9bff; --purple:#b794f6;
+    --sans:'IBM Plex Sans',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased;overflow:hidden}
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-thumb{background:#262b36;border-radius:4px}
+  ::-webkit-scrollbar-track{background:transparent}
+  button,input{font-family:inherit}
+  button{cursor:pointer;border:none}
+  @keyframes vfade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+  @keyframes vpulse{0%{box-shadow:0 0 0 0 rgba(232,184,75,.5)}70%{box-shadow:0 0 0 7px rgba(232,184,75,0)}100%{box-shadow:0 0 0 0 rgba(232,184,75,0)}}
+  @keyframes vpulseg{0%{box-shadow:0 0 0 0 rgba(53,208,127,.5)}70%{box-shadow:0 0 0 7px rgba(53,208,127,0)}100%{box-shadow:0 0 0 0 rgba(53,208,127,0)}}
+  @keyframes vblink{0%,49%{opacity:1}50%,100%{opacity:0}}
+  @keyframes vspin{to{transform:rotate(360deg)}}
+
+  .app{height:100vh;display:flex;flex-direction:column;background:var(--bg);
+    background-image:linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px);background-size:42px 42px}
+
+  /* header */
+  header{display:flex;align-items:center;gap:18px;height:62px;padding:0 18px;background:var(--head);border-bottom:1px solid var(--line);flex:0 0 auto;z-index:2}
+  .brand{display:flex;align-items:center;gap:11px}
+  .logo{width:30px;height:30px;border-radius:6px;background:var(--green);display:flex;align-items:center;justify-content:center;box-shadow:0 0 18px -2px rgba(53,208,127,.55);font:700 17px var(--mono);color:#0a0b0e}
+  .brand .name{font:600 15px/1 var(--sans);letter-spacing:.01em;color:var(--strong2)}
+  .brand .tag{font:500 8.5px/1.3 var(--mono);letter-spacing:.2em;color:var(--faint2);text-transform:uppercase;margin-top:3px}
+  .vsep{width:1px;height:30px;background:var(--line)}
+  .co{display:flex;align-items:center;gap:12px}
+  .search{background:#0a0b0e;border:1px solid var(--line);border-radius:5px;color:var(--strong2);font:600 13px var(--sans);padding:7px 11px;width:188px;outline:none}
+  .search:focus{border-color:var(--green)}
+  .search::placeholder{color:var(--faint2);font-weight:500}
+  .co-meta{font:500 8.5px/1.2 var(--mono);letter-spacing:.1em;color:var(--faint2);text-transform:uppercase;margin-top:5px}
+  .chips{display:flex;gap:5px}
+  .chip{font:500 9px var(--mono);color:var(--faint2);padding:4px 7px;border:1px solid var(--line);border-radius:3px;background:none;text-transform:uppercase}
+  .chip:hover{border-color:var(--green);color:var(--green-soft)}
+  .grow{flex:1}
+  .timer{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+  .timer-row{display:flex;align-items:baseline;gap:8px}
+  .timer-row .lbl{font:500 9px var(--mono);letter-spacing:.16em;color:var(--faint2)}
+  .timer-row .val{font:600 18px/1 var(--mono);color:var(--strong)}
+  .timer-row .bud{font:500 9px var(--mono);color:var(--ghost)}
+  .budget{width:158px;height:3px;background:#1a1d26;border-radius:2px;overflow:hidden}
+  .budget > i{display:block;height:100%;width:0;background:var(--green);transition:width .2s linear}
+  .badge{font:600 9px var(--mono);letter-spacing:.1em;padding:6px 10px;border-radius:4px;color:var(--faint2);border:1px solid var(--line);background:transparent}
+  .badge.signed{color:var(--green);border-color:#245038;background:rgba(53,208,127,.08)}
+  .run{font:600 11px var(--mono);letter-spacing:.06em;color:#0a0b0e;background:var(--green);padding:9px 16px;border-radius:5px;box-shadow:0 0 18px -4px rgba(53,208,127,.6)}
+  .run.running{color:var(--amber);background:#16181f;border:1px solid var(--line-muted);box-shadow:none;cursor:default}
+
+  main{flex:1;min-height:0;display:grid;grid-template-columns:296px minmax(0,1fr) 414px;gap:1px;background:#1a1d26}
+  .col{background:var(--bg);overflow-y:auto;min-width:0}
+  .col.flex{display:flex;flex-direction:column}
+
+  /* left pipeline */
+  .left{padding:13px 12px}
+  .left .hd{font:600 9.5px var(--sans);letter-spacing:.18em;color:var(--faint2);text-transform:uppercase;margin:2px 2px 12px}
+  .stage{position:relative;padding:11px 12px;background:var(--panel);border:1px solid var(--line);border-left:2px solid var(--line-muted);border-radius:4px;transition:all .3s ease}
+  .stage.queued{opacity:.66}
+  .stage.running{border-left-color:var(--amber);box-shadow:0 0 0 1px rgba(232,184,75,.14),0 8px 26px -14px rgba(232,184,75,.5)}
+  .stage.ok{border-left-color:var(--green);box-shadow:0 0 0 1px rgba(53,208,127,.07)}
+  .stage.degraded{border-left-color:var(--amber)}
+  .s-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+  .s-idx{font:500 9px var(--mono);letter-spacing:.14em;color:var(--faint2);text-transform:uppercase}
+  .s-dot{width:8px;height:8px;border-radius:50%;background:#3a3f4d;flex:0 0 auto}
+  .stage.running .s-dot{background:var(--amber);animation:vpulse 1.2s ease-out infinite}
+  .stage.ok .s-dot{background:var(--green)}
+  .stage.degraded .s-dot{background:var(--amber)}
+  .s-name{font:600 17px/1 var(--sans);letter-spacing:.03em;color:var(--strong)}
+  .s-sponsors{font:500 9px/1.5 var(--mono);color:var(--faint);margin-top:7px}
+  .s-foot{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:9px;border-top:1px solid var(--line-faint)}
+  .s-status{font:500 9px var(--mono);letter-spacing:.1em;color:var(--faint2)}
+  .stage.running .s-status{color:var(--amber)} .stage.ok .s-status{color:var(--green)} .stage.degraded .s-status{color:var(--amber)}
+  .s-lat{font:500 9px var(--mono);color:var(--ghost)}
+  .conn{height:10px;width:1px;background:var(--line);margin:0 auto}
+
+  /* panel headers */
+  .strip{display:flex;align-items:center;gap:9px;padding:10px 14px;background:var(--head);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:1}
+  .strip .dot{width:8px;height:8px;border-radius:50%;background:#3a3f4d;flex:0 0 auto}
+  .strip.running .dot{background:var(--amber);animation:vpulse 1.2s ease-out infinite}
+  .strip.complete .dot{background:var(--green)}
+  .strip .msg{font:500 10px var(--mono);letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+  .strip .sse{font:500 9px var(--mono);color:var(--faint2)}
+  .phd{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--line);background:var(--head2)}
+  .phd.t{border-top:1px solid var(--line);margin-top:8px}
+  .phd .l{font:600 9.5px var(--sans);letter-spacing:.16em;color:var(--dim);text-transform:uppercase}
+  .phd .r{font:500 9px var(--mono);letter-spacing:.06em;color:var(--faint2);text-transform:uppercase}
+
+  /* evidence feed */
+  .feed-row{display:flex;gap:11px;padding:9px 14px;border-bottom:1px solid var(--line-2);animation:vfade .35s ease both}
+  .feed-row .t{font:500 9px var(--mono);color:var(--ghost);flex:0 0 38px;padding-top:2px}
+  .feed-row .h{font:500 12.5px/1.45 var(--sans);color:var(--text)}
+  .feed-row .src{display:flex;align-items:center;gap:7px;margin-top:4px}
+  .feed-row .src i{width:5px;height:5px;border-radius:50%;background:#3b6f8c;flex:0 0 auto}
+  .feed-row .src span{font:500 9px var(--mono);letter-spacing:.03em;color:var(--faint)}
+
+  /* video card */
+  .video{margin:11px 14px 4px;border:1px solid var(--line);border-radius:5px;overflow:hidden;background:var(--panel);animation:vfade .4s ease both}
+  .video .body{display:flex;gap:12px;padding:12px}
+  .video .thumb{width:100px;height:60px;border-radius:3px;flex:0 0 auto;background:repeating-linear-gradient(135deg,#13161e 0 7px,#171b24 7px 14px);display:flex;align-items:center;justify-content:center;border:1px solid var(--line)}
+  .video .play{width:0;height:0;border-left:12px solid var(--green);border-top:8px solid transparent;border-bottom:8px solid transparent}
+  .video .ti{font:600 11.5px var(--sans);color:var(--strong)}
+  .video .me{font:500 9px var(--mono);color:var(--faint);margin-top:5px}
+  .video .tr{font:400 11.5px/1.5 var(--sans);color:var(--muted);margin-top:8px;font-style:italic}
+  .video .ft{display:flex;justify-content:space-between;padding:7px 12px;border-top:1px solid var(--line-faint);background:var(--head2)}
+  .video .ft .a{font:500 8px var(--mono);letter-spacing:.12em;color:var(--faint2)}
+  .video .ft .b{font:500 8px var(--mono);letter-spacing:.08em;color:var(--amber)}
+  .video .ft .b.live{color:var(--green)}
+
+  /* steps */
+  .step{display:flex;align-items:flex-start;gap:11px;padding:8px 14px;animation:vfade .3s ease both}
+  .step .tag{font:600 8px var(--mono);letter-spacing:.08em;padding:3px 5px;border-radius:3px;flex:0 0 auto;margin-top:1px}
+  .step .tag.TOOL{color:var(--blue);background:rgba(91,155,255,.12);border:1px solid rgba(91,155,255,.28)}
+  .step .tag.THINK{color:var(--purple);background:rgba(183,148,246,.12);border:1px solid rgba(183,148,246,.28)}
+  .step .call{font:500 11px/1.45 var(--mono);color:var(--text)}
+  .step .call .fn{color:var(--blue)} .step .call .pa{color:var(--faint2)} .step .call .arg{color:var(--dim)}
+  .step .res{font:500 10px var(--mono);color:var(--green);margin-top:4px;min-height:13px}
+  .caret{display:flex;align-items:center;gap:9px;padding:6px 14px 10px}
+  .caret .c{width:22px;font:500 11px var(--mono);color:var(--purple);text-align:center}
+  .caret .x{font:500 10px var(--mono);color:var(--faint);animation:vblink 1.1s steps(1) infinite}
+
+  /* thesis */
+  .thesis{margin:6px 14px 16px;padding:12px;border:1px solid #243a30;border-left:2px solid var(--green);border-radius:5px;background:rgba(53,208,127,.05);animation:vfade .4s ease both}
+  .thesis .l{font:600 9px var(--mono);letter-spacing:.16em;color:var(--green);text-transform:uppercase;margin-bottom:8px}
+  .thesis .p{font:400 12.5px/1.6 var(--sans);color:#d4d9e2}
+  .thesis .p b{color:#fff;font-weight:600} .thesis .p .g{color:var(--green);font-weight:600}
+  .risks{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
+  .risk{font:500 9px var(--mono);letter-spacing:.04em;padding:4px 8px;border-radius:3px}
+  .risk.MED{color:var(--amber);border:1px solid #4a3c1f;background:rgba(232,184,75,.08)}
+  .risk.LOW{color:var(--dim);border:1px solid var(--line-muted);background:rgba(139,147,163,.06)}
+
+  /* valuation */
+  .valbody{transition:opacity .5s ease;opacity:.34}
+  .valbody.on{opacity:1}
+  .metrics{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line-faint);border-bottom:1px solid var(--line-faint)}
+  .metric{background:var(--bg);padding:11px 14px}
+  .metric .k{font:500 8.5px var(--mono);letter-spacing:.12em;color:var(--faint2)}
+  .metric .v{font:600 17px var(--mono);color:var(--strong);margin-top:5px}
+  .metric .v.muted{color:var(--muted)} .metric .v.green{color:var(--green)} .metric .v small{font-size:11px}
+  .valwrap{padding:13px 14px}
+  .valwrap .hd{font:600 9px var(--mono);letter-spacing:.14em;color:var(--faint2);text-transform:uppercase;margin-bottom:11px}
+  .bar{margin-bottom:10px}
+  .bar .row{display:flex;justify-content:space-between;margin-bottom:5px}
+  .bar .row .lab{font:500 10px var(--sans);color:var(--muted)}
+  .bar .row .rng{font:500 9px var(--mono);color:var(--faint)}
+  .bar .track{position:relative;height:9px;background:var(--inset);border-radius:2px}
+  .bar .fill{position:absolute;top:0;height:100%;width:0;border-radius:2px;transition:width .9s cubic-bezier(.2,.7,.3,1)}
+  .axisline{position:relative;height:1px;background:var(--line);margin-top:4px}
+  .axis{position:relative;height:15px;margin-top:3px}
+  .axis span{position:absolute;font:500 8px var(--mono);color:var(--ghost)}
+  .fvmark{font:600 8px var(--mono);color:var(--green);white-space:nowrap;top:1px;opacity:0;transition:opacity .4s .5s ease}
+  .fvmark.on{opacity:1}
+  .revwrap{margin-top:14px;padding-top:13px;border-top:1px solid var(--line-faint)}
+  .revwrap .hd{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px}
+  .revwrap .hd .l{font:600 9px var(--mono);letter-spacing:.14em;color:var(--faint2);text-transform:uppercase}
+  .revwrap .hd .r{font:500 9px var(--mono);color:var(--green)}
+  .revaxis{display:flex;justify-content:space-between;font:500 8px var(--mono);color:var(--ghost);margin-top:4px}
+
+  /* artifacts */
+  .art{display:flex;align-items:center;gap:11px;padding:10px 14px;border-bottom:1px solid var(--line-2);animation:vfade .35s ease both}
+  .art .ext{font:700 8px var(--mono);letter-spacing:.05em;padding:4px 6px;border-radius:3px;flex:0 0 auto}
+  .art .n{font:500 11px var(--sans);color:var(--text)}
+  .art .m{font:500 9px var(--mono);color:var(--faint);margin-top:3px}
+  .art .ok{font:600 11px var(--mono);color:var(--green)}
+
+  /* credential */
+  .cred{padding:13px 14px;display:flex;flex-direction:column;gap:11px}
+  .kv{font:500 9.5px var(--mono)}
+  .kv .r{display:flex;justify-content:space-between} .kv .r + .r{margin-top:6px}
+  .kv .k{color:var(--faint2)} .kv .v{color:var(--muted)}
+  .vcbox{display:flex;align-items:center;gap:11px;padding:11px 12px;border:1px solid var(--line);border-radius:5px;background:var(--panel);transition:all .35s ease}
+  .vcbox.signing{border-color:#4a3c1f;background:rgba(232,184,75,.05)}
+  .vcbox.signed{border-color:#245038;background:rgba(53,208,127,.07);box-shadow:0 0 22px -10px rgba(53,208,127,.7)}
+  .vcdot{width:22px;height:22px;border-radius:50%;border:2px solid var(--line-muted);flex:0 0 auto;display:flex;align-items:center;justify-content:center}
+  .vcbox.signing .vcdot{border-top-color:var(--amber);animation:vspin .7s linear infinite}
+  .vcbox.signed .vcdot{border:none;background:var(--green);color:#0a0b0e;font:700 12px var(--mono);animation:vpulseg 1.4s ease-out 2}
+  .vctitle{font:600 11px var(--sans);letter-spacing:.04em;color:var(--faint2)}
+  .vcbox.signing .vctitle{color:var(--amber)} .vcbox.signed .vctitle{color:var(--green)}
+  .vcsub{font:500 9px var(--mono);color:var(--faint);margin-top:3px}
+  .vcverify{font:600 9px var(--mono);color:#0a0b0e;background:var(--green);padding:4px 8px;border-radius:3px;flex:0 0 auto;display:none}
+  .vcbox.signed .vcverify{display:block}
+  .mbox{padding:10px 11px;border:1px solid var(--line);border-radius:4px;background:var(--panel)}
+  .mbox .h{font:600 8px var(--mono);letter-spacing:.14em;color:var(--faint2);text-transform:uppercase;margin-bottom:7px}
+  .mbox .c{font:500 10px/1.6 var(--mono);color:var(--muted)} .mbox .c b{color:var(--blue);font-weight:500}
+  .gate{display:flex;flex-direction:column;gap:8px}
+  .gate .h{font:600 8px var(--mono);letter-spacing:.14em;color:var(--faint2);text-transform:uppercase}
+  .gbox{padding:10px 11px;border-radius:4px;animation:vfade .35s ease both}
+  .gbox.denied{border:1px solid #5a2a2a;background:rgba(239,93,93,.07)}
+  .gbox.auth{border:1px solid #245038;background:rgba(53,208,127,.07);box-shadow:0 0 0 1px rgba(53,208,127,.06)}
+  .gbox .req{font:500 10px var(--mono);color:var(--text)} .gbox .req .lbl{color:var(--dim)}
+  .gbox .req .rd{color:var(--red-soft)}
+  .gbox .badge-row{display:flex;align-items:center;gap:8px;margin-top:7px}
+  .gbadge{font:700 9px var(--mono);letter-spacing:.06em;color:#0a0b0e;padding:3px 8px;border-radius:3px}
+  .gbadge.d{background:var(--red)} .gbadge.a{background:var(--green)}
+  .gmsg{font:500 10px var(--mono)} .gmsg.d{color:var(--red-soft)} .gmsg.a{color:var(--green-soft)}
+  .landed{margin-top:8px;padding-top:8px;border-top:1px solid #1d3328;font:500 10px var(--mono);color:var(--green);animation:vfade .3s ease both}
+  .landed b{font-weight:600}
+  .nosana{display:flex;align-items:center;gap:8px;padding-top:11px;border-top:1px solid var(--line-faint)}
+  .nosana i{width:5px;height:5px;border-radius:50%;background:var(--green);flex:0 0 auto}
+  .nosana span{font:500 8.5px var(--mono);color:var(--faint)} .nosana span em{color:var(--amber);font-style:normal}
+
+  /* footer */
+  footer{display:flex;align-items:center;gap:16px;height:30px;padding:0 16px;background:var(--head);border-top:1px solid var(--line);flex:0 0 auto}
+  footer .a{font:600 9px var(--mono);letter-spacing:.12em;color:#7a8294}
+  footer .b{font:500 8.5px var(--mono);letter-spacing:.08em;color:var(--ghost)}
+  footer .s{font:600 9px var(--mono);letter-spacing:.1em;color:var(--faint2)}
+  footer .s.running{color:var(--amber)} footer .s.sealed{color:var(--green)}
+  .empty{padding:14px;font:500 11px var(--mono);color:#3a4252}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand">
+      <div class="logo">V</div>
+      <div><div class="name">Verdict</div><div class="tag">Autonomous Due-Diligence</div></div>
+    </div>
+    <div class="vsep"></div>
+    <div class="co">
+      <div>
+        <input id="search" class="search" placeholder="Search a company…" autocomplete="off" />
+        <div class="co-meta" id="cometa">— · — · —</div>
+      </div>
+      <div class="chips" id="chips"></div>
+    </div>
+    <div class="grow"></div>
+    <div class="timer">
+      <div class="timer-row"><span class="lbl">ELAPSED</span><span class="val" id="elapsed">0:00</span><span class="bud">/ 1:40 budget</span></div>
+      <div class="budget"><i id="budget"></i></div>
+    </div>
+    <div class="vsep"></div>
+    <div class="badge" id="badge">○ UNSIGNED</div>
+    <button class="run" id="run">▸&nbsp; RUN DUE DILIGENCE</button>
+  </header>
+
+  <main>
+    <!-- LEFT -->
+    <aside class="col left">
+      <div class="hd">Pipeline · 5 Stages</div>
+      <div id="spine"></div>
+    </aside>
+
+    <!-- CENTER -->
+    <section class="col flex">
+      <div class="strip" id="strip"><span class="dot"></span><span class="msg" id="phasemsg">IDLE · awaiting mandate</span><span class="grow"></span><span class="sse">SSE · typed event-log</span></div>
+      <div class="phd"><span class="l">Perceive · Evidence Feed</span><span class="r">Bright Data · MCP in-loop</span></div>
+      <div id="feed"><div class="empty">awaiting run…</div></div>
+      <div id="video"></div>
+      <div class="phd t"><span class="l">Reason · Analyst Loop</span><span class="r" id="toolmeta">Kimi K2 · 0 / 4 tool calls</span></div>
+      <div id="steps"></div>
+      <div id="caret"></div>
+      <div id="thesis"></div>
+    </section>
+
+    <!-- RIGHT -->
+    <aside class="col flex">
+      <div class="strip" style="background:var(--head)"><span class="l" style="font:600 9.5px var(--sans);letter-spacing:.16em;color:var(--dim);text-transform:uppercase">Compute · Valuation</span><span class="grow"></span><span class="r" style="font:500 9px var(--mono);color:var(--faint2);text-transform:uppercase;letter-spacing:.06em">Daytona · stateful</span></div>
+      <div class="valbody" id="valbody"><div class="empty">awaiting compute…</div></div>
+      <div class="phd"><span class="l">Produce · Artifacts</span><span class="r">python-pptx · openpyxl</span></div>
+      <div id="artifacts"></div>
+      <div class="phd"><span class="l">Verify · Act</span><span class="r">Terminal 3 · Nosana</span></div>
+      <div class="cred">
+        <div class="kv"><div class="r"><span class="k">AGENT DID</span><span class="v" id="did">—</span></div><div class="r"><span class="k">REPORT HASH</span><span class="v" id="rhash">—</span></div></div>
+        <div class="vcbox" id="vcbox"><span class="vcdot" id="vcdot"></span><div style="flex:1;min-width:0"><div class="vctitle" id="vctitle">AWAITING SIGNATURE</div><div class="vcsub" id="vcsub">report hash staged</div></div><span class="vcverify">verify ✓</span></div>
+        <div id="mandate"></div>
+        <div class="gate"><div class="h">Action Gate</div><div id="gate"></div></div>
+        <div id="nosana"></div>
+      </div>
+    </aside>
+  </main>
+
+  <footer>
+    <span class="a">5 STAGES · 8 PLATFORMS · 1 SIGNED DECISION</span>
+    <span class="grow"></span>
+    <span class="b">BRIGHT DATA · KIMI K2 · DAYTONA · VIDEODB · TERMINAL 3 · NOSANA · TOKENROUTER · SENSENOVA</span>
+    <span class="grow"></span>
+    <span class="s" id="footstate">○ IDLE</span>
+  </footer>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const STAGES=[['scout','01','Perceive','SCOUT','Bright Data · VideoDB'],['analyst','02','Reason','ANALYST','Kimi K2 · TokenRouter'],['quant','03','Compute','QUANT','Daytona'],['producer','04','Produce','PRODUCER','python-pptx · openpyxl'],['notary','05','Verify · Act','NOTARY','Terminal 3 · Nosana']];
+const PHASE={idle:'IDLE · awaiting mandate',resolving:'RESEARCH · building dossier (live model)',scout:'PERCEIVE · Bright Data + VideoDB streaming evidence',analyst:'REASON · Kimi K2 bounded tool-loop',quant:'COMPUTE · Daytona stateful sandbox',producer:'PRODUCE · python-pptx + openpyxl in sandbox',notary:'VERIFY · Terminal 3 mandate gate',complete:'SEALED · signed, auditable verdict'};
+const STATUS_LABEL={queued:'QUEUED',running:'RUNNING',ok:'OK',degraded:'DEGRADED · CACHE'};
+const ART={md:['MD','#5b9bff','investment memo'],pdf:['PDF','#ef5d5d','investment memo'],pptx:['PPTX','#e8b84b','IC presentation'],xlsx:['XLSX','#35d07f','DCF + comps + sensitivity']};
+
+let es=null, running=false, complete=false, runT0=0, timer=null, currentCompany='sea', toolCount=0, lastStep=null;
+
+const esc=s=>(s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmtUsd=v=>{v=+v;if(!isFinite(v))return '$—';const a=Math.abs(v);if(a>=1e9)return '$'+(v/1e9).toFixed(0)+'B';if(a>=1e6)return '$'+(v/1e6).toFixed(0)+'M';if(a>=1e3)return '$'+(v/1e3).toFixed(1)+'k';return '$'+v.toFixed(2);};
+const mmss=s=>{s=Math.max(0,Math.floor(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');};
+const relT=()=>'+'+((performance.now()-runT0)/1000).toFixed(1)+'s';
+const lat=ms=>(ms/1000).toFixed(1)+'s';
+function srcUrl(source){const p=(source||'').split('·').pop().trim().toLowerCase().replace(/\s+/g,'');const dom=p.includes('.')?p:(p?p+'.com':'web');return 'brightdata://'+dom;}
+const isThink=t=>/kimi|synth|rank|think|reason/i.test(t||'');
+
+function buildSpine(){
+  $('spine').innerHTML=STAGES.map((d,i)=>`<div class="stage queued" id="st-${d[0]}">
+    <div class="s-top"><span class="s-idx">${d[1]} · ${d[2]}</span><span class="s-dot"></span></div>
+    <div class="s-name">${d[3]}</div><div class="s-sponsors">${d[4]}</div>
+    <div class="s-foot"><span class="s-status">QUEUED</span><span class="s-lat">—</span></div></div>${i<4?'<div class="conn"></div>':''}`).join('');
+}
+function buildChips(){
+  fetch('/api/companies').then(r=>r.json()).then(cos=>{
+    $('chips').innerHTML=cos.map(c=>`<button class="chip" data-id="${c.id}" data-name="${esc(c.name)}">${esc(c.ticker||c.id)}</button>`).join('');
+    document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{$('search').value=b.dataset.name;run(b.dataset.id);});
+  }).catch(()=>{});
+}
+function updateStage(key,status,latency){
+  const c=$('st-'+key); if(!c)return; c.className='stage '+status;
+  c.querySelector('.s-status').textContent=STATUS_LABEL[status]||status.toUpperCase();
+  if(latency)c.querySelector('.s-lat').textContent=latency;
+}
+function setPhase(p){const s=$('strip');s.className='strip'+(complete?' complete':(running?' running':''));$('phasemsg').textContent=PHASE[p]||p;}
+
+function resetUI(){
+  buildSpine();
+  $('feed').innerHTML=''; $('video').innerHTML=''; $('steps').innerHTML=''; $('caret').innerHTML=''; $('thesis').innerHTML='';
+  $('valbody').className='valbody'; $('valbody').innerHTML='<div class="empty">computing…</div>';
+  $('artifacts').innerHTML=''; $('mandate').innerHTML=''; $('gate').innerHTML=''; $('nosana').innerHTML='';
+  $('did').textContent='—'; $('rhash').textContent='—';
+  $('vcbox').className='vcbox'; $('vctitle').textContent='AWAITING SIGNATURE'; $('vcsub').textContent='report hash staged'; $('vcdot').textContent='';
+  $('toolmeta').textContent='Kimi K2 · 0 / 4 tool calls'; toolCount=0; lastStep=null;
+  $('badge').className='badge'; $('badge').textContent='○ UNSIGNED';
+}
+function setRunBtn(state){const b=$('run');if(state==='running'){b.className='run running';b.innerHTML='◍&nbsp; RUNNING';}else if(state==='replay'){b.className='run';b.innerHTML='↻&nbsp; REPLAY';}else{b.className='run';b.innerHTML='▸&nbsp; RUN DUE DILIGENCE';}}
+function setFoot(state){const f=$('footstate');if(state==='running'){f.className='s running';f.textContent='● RUNNING';}else if(state==='sealed'){f.className='s sealed';f.textContent='● SEALED';}else{f.className='s';f.textContent='○ IDLE';}}
+
+function startTimer(){stopTimer();timer=setInterval(()=>{const e=(performance.now()-runT0)/1000;$('elapsed').textContent=mmss(e);const pct=Math.min(100,e/100*100);const bar=$('budget');bar.style.width=pct+'%';bar.style.background=e>90?'var(--amber)':'var(--green)';},200);}
+function stopTimer(){if(timer){clearInterval(timer);timer=null;}}
+
+function appendFeed(e){
+  if($('feed').querySelector('.empty'))$('feed').innerHTML='';
+  const div=document.createElement('div');div.className='feed-row';
+  div.innerHTML=`<span class="t">${relT()}</span><div style="flex:1;min-width:0"><div class="h">${esc(e.title)}</div><div class="src"><i></i><span>${esc(srcUrl(e.source))}</span></div></div>`;
+  $('feed').appendChild(div);
+}
+function renderVideo(e){
+  const live=e.source==='live';
+  $('video').innerHTML=`<div class="video"><div class="body">
+    <div class="thumb"><span class="play"></span></div>
+    <div style="flex:1;min-width:0"><div class="ti">${esc(e.title)||'Earnings call'}</div>
+    <div class="me">segment located @ ${esc(e.timestamp)||'—'} · spoken-word index</div>
+    <div class="tr">"${esc(e.transcript)||'…'}"</div></div></div>
+    <div class="ft"><span class="a">VIDEODB · SPOKEN-WORD SEARCH</span><span class="b${live?' live':''}">● ${live?'LIVE · INDEXED':'CACHE · PRE-INDEXED'}</span></div></div>`;
+}
+function appendStep(e){
+  const tag=isThink(e.tool)?'THINK':'TOOL';
+  if(e.observation===undefined){
+    const div=document.createElement('div');div.className='step';
+    div.innerHTML=`<span class="tag ${tag}">${tag}</span><div style="flex:1;min-width:0"><div class="call"><span class="fn">${esc(e.tool)}</span><span class="pa">(</span><span class="arg">${esc(e.query)}</span><span class="pa">)</span></div><div class="res"></div></div>`;
+    $('steps').appendChild(div); lastStep=div;
+    if(tag==='TOOL'){toolCount++;$('toolmeta').textContent='Kimi K2 · '+Math.min(toolCount,4)+' / 4 tool calls';}
+  }else if(lastStep){lastStep.querySelector('.res').textContent='→ '+e.observation;}
+}
+function showCaret(on){$('caret').innerHTML=on?'<div class="caret"><span class="c">▋</span><span class="x">Kimi K2 reasoning over 256K context…</span></div>':'';}
+function renderThesis(e){
+  showCaret(false);
+  const prose=esc(e.summary).replace(/(\$[\d.,]+[BMK]?)/g,'<b>$1</b>').replace(/([+-]\d+(?:\.\d+)?%)/g,'<span class="g">$1</span>');
+  const risks=(e.risks||[]).map((r,i)=>{const lab=typeof r==='string'?r:(r.label||'');const sev=(typeof r==='object'&&r.severity)?r.severity:(i<(e.risks.length-1)?'MED':'LOW');return `<span class="risk ${sev}">${esc(lab)} · ${sev}</span>`;}).join('');
+  $('thesis').innerHTML=`<div class="thesis"><div class="l">Thesis · ranked synthesis</div><div class="p">${prose}</div><div class="risks">${risks}</div></div>`;
+}
+function renderValuation(e){
+  const aMin=e.axis_min, aMax=e.axis_max, rng=(aMax-aMin)||1;
+  const bars=(e.ranges||[]).map(b=>{const l=(b.low-aMin)/rng*100, w=(b.high-b.low)/rng*100;
+    return `<div class="bar"><div class="row"><span class="lab">${esc(b.label)}</span><span class="rng">${fmtUsd(b.low)} – ${fmtUsd(b.high)}</span></div><div class="track"><div class="fill" data-w="${w.toFixed(2)}" style="left:${l.toFixed(2)}%;background:${b.color}"></div></div></div>`;}).join('');
+  const fvP=(e.fair_value_usd-aMin)/rng*100;
+  const ser=e.rev_series||[], smax=Math.max(...ser,1), smin=Math.min(...ser,0), srng=(smax-smin)||1;
+  const pts=ser.map((v,i)=>{const x=5+i*(222/Math.max(1,ser.length-1));const y=6+(1-(v-smin)/srng)*33;return x.toFixed(1)+','+y.toFixed(2);}).join(' ');
+  const last=ser.map((v,i)=>[5+i*(222/Math.max(1,ser.length-1)),6+(1-(v-smin)/srng)*33]).pop()||[227,6];
+  const upPct=Math.round((e.upside||0)*100);
+  $('valbody').innerHTML=`
+    <div class="metrics">
+      <div class="metric"><div class="k">REVENUE</div><div class="v">${(+e.revenue_b>=1000)?fmtUsd(e.revenue_b):'$'+e.revenue_b+'B'}</div></div>
+      <div class="metric"><div class="k">GROWTH</div><div class="v">${Math.round((e.growth||0)*100)}%</div></div>
+      <div class="metric"><div class="k">CURRENT / LAST</div><div class="v muted">${fmtUsd(e.current_price_usd)}</div></div>
+      <div class="metric"><div class="k">FAIR VALUE</div><div class="v green">${fmtUsd(e.fair_value_usd)} <small>${upPct>=0?'+':''}${upPct}%</small></div></div>
+    </div>
+    <div class="valwrap">
+      <div class="hd">Valuation Range · ${fmtUsd(aMin)}–${fmtUsd(aMax)}</div>
+      ${bars}
+      <div class="axisline"></div>
+      <div class="axis"><span style="left:0">${fmtUsd(aMin)}</span><span style="left:50%;transform:translateX(-50%)">${fmtUsd((aMin+aMax)/2)}</span><span style="right:0">${fmtUsd(aMax)}</span><span class="fvmark" style="left:${fvP.toFixed(2)}%;transform:translateX(-50%)">▲ FV ${fmtUsd(e.fair_value_usd)}</span></div>
+      <div class="revwrap"><div class="hd"><span class="l">Revenue Trend · $B</span><span class="r">+${Math.round((e.growth||0)*100)}% YoY</span></div>
+        <svg width="100%" viewBox="0 0 232 50" preserveAspectRatio="none" style="display:block"><polyline points="${pts}" fill="none" stroke="#35d07f" stroke-width="1.6" vector-effect="non-scaling-stroke"></polyline><circle cx="${last[0].toFixed(1)}" cy="${last[1].toFixed(2)}" r="2.6" fill="#35d07f"></circle></svg>
+        <div class="revaxis"><span>'21</span><span>'22</span><span>'23</span><span>'24</span><span>'25E</span></div>
+      </div>
+    </div>`;
+  $('valbody').classList.add('on');
+  requestAnimationFrame(()=>{document.querySelectorAll('#valbody .fill').forEach(f=>f.style.width=f.dataset.w+'%');setTimeout(()=>{const m=document.querySelector('.fvmark');if(m)m.classList.add('on');},50);});
+}
+function appendArtifact(e){
+  const k=(e.kind||'').toLowerCase(); const a=ART[k]||[k.toUpperCase()||'FILE','#5b9bff','file'];
+  const name=(e.path||'').split('/').pop()||'artifact';
+  const div=document.createElement('div');div.className='art';
+  div.innerHTML=`<span class="ext" style="color:${a[1]};border:1px solid ${a[1]}55;background:${a[1]}14">${a[0]}</span><div style="flex:1;min-width:0"><div class="n">${esc(name)}</div><div class="m">${a[2]}</div></div><span class="ok">✓</span>`;
+  $('artifacts').appendChild(div);
+}
+function renderMandate(e){
+  $('mandate').innerHTML=`<div class="mbox"><div class="h">Mandate · Verifiable Credential</div><div class="c">scope.actions = [<b>${(e.actions||[]).join(', ')}</b>]<br>position_cap = <b>${fmtUsd(e.cap_usd)}</b></div></div>`;
+}
+function renderDenied(e){
+  $('gate').insertAdjacentHTML('beforeend',`<div class="gbox denied"><div class="req"><span class="lbl">request:</span> ${esc(e.action)}</div><div class="badge-row"><span class="gbadge d">DENIED</span><span class="gmsg d">${esc(e.reason)}</span></div></div>`);
+}
+function renderAuth(e){
+  $('gate').insertAdjacentHTML('beforeend',`<div class="gbox auth" id="authbox"><div class="req"><span class="lbl">request:</span> ${esc(e.action)}</div><div class="badge-row"><span class="gbadge a">AUTHORIZED</span><span class="gmsg a">signature verified ✓</span></div><div class="landed">↳ ${esc(e.destination)} ✓</div></div>`);
+}
+function renderNosana(e){
+  const tx=(e.tx||'').toString();const shortTx=tx.length>10?tx.slice(0,6)+'…'+tx.slice(-2):tx;
+  $('nosana').innerHTML=`<div class="nosana"><i></i><span>NOSANA · ${esc(e.job||'evidence-embed')} nos://…${esc(shortTx)} · on-chain ✓ <em>(pre-run)</em></span></div>`;
+}
+
+function dispatch(e){
+  switch(e.type){
+    case 'run_started': break;
+    case 'resolving': setPhase('resolving'); break;
+    case 'resolved': {
+      const priv=/^(private|—|-|)$/i.test((e.ticker||'').trim());
+      const sector=(e.sector||'').split(/[—\-·,(]/)[0].trim().slice(0,22)||'—';
+      $('cometa').textContent=`${sector} · ${priv?'PRIVATE':'PUBLIC'} · ${e.indexed?'PRE-INDEXED':'LIVE WEB'}`.toUpperCase();
+      if(e.name)$('search').value=e.name; break;
+    }
+    case 'stage_started': setPhase(e.stage); updateStage(e.stage,'running'); if(e.stage==='analyst')showCaret(true); break;
+    case 'stage_completed': updateStage(e.stage, e.status==='degraded'?'degraded':'ok', lat(e.latency_ms||0)); if(e.stage==='analyst')showCaret(false); break;
+    case 'stage_skipped': updateStage(e.stage,'degraded','SKIP'); break;
+    case 'evidence': appendFeed(e); break;
+    case 'video_segment': renderVideo(e); break;
+    case 'analyst_step': appendStep(e); break;
+    case 'thesis': renderThesis(e); break;
+    case 'quant_code': break;
+    case 'valuation': renderValuation(e); break;
+    case 'artifact': appendArtifact(e); break;
+    case 'signing': $('did').textContent=e.did?e.did.slice(0,16)+'…'+e.did.slice(-4):'—'; $('rhash').textContent='0x'+(e.report_hash||'').slice(0,6)+'…'+(e.report_hash||'').slice(-4); $('vcbox').className='vcbox signing'; $('vctitle').textContent='SIGNING…'; $('vcsub').textContent='sealing report hash → VC'; break;
+    case 'signed': $('vcbox').className='vcbox signed'; $('vcdot').textContent='✓'; $('vctitle').textContent='CREDENTIAL SIGNED'; $('vcsub').textContent=(e.scheme||'Ed25519')+' · DID-bound provenance'; break;
+    case 'mandate': renderMandate(e); break;
+    case 'mandate_check': break;
+    case 'mandate_denied': renderDenied(e); break;
+    case 'mandate_authorized': renderAuth(e); break;
+    case 'nosana_receipt': renderNosana(e); break;
+    case 'run_completed': stopRun(true); break;
+    case 'error': if($('feed').querySelector('.empty'))$('feed').innerHTML=''; $('feed').insertAdjacentHTML('beforeend',`<div class="feed-row"><span class="t"></span><div class="h" style="color:var(--red)">${esc(e.message)}</div></div>`); stopRun(false); break;
+  }
+}
+
+function run(company){
+  company=(company||$('search').value||'sea').trim();
+  if(!company||running)return;
+  currentCompany=company; $('search').value=company;
+  if(es)es.close();
+  resetUI(); running=true; complete=false;
+  setRunBtn('running'); setFoot('running'); setPhase('idle');
+  $('elapsed').textContent='0:00'; $('budget').style.width='0%';
+  runT0=performance.now(); startTimer();
+  es=new EventSource('/api/run?company='+encodeURIComponent(company));
+  es.onmessage=ev=>{try{dispatch(JSON.parse(ev.data));}catch(err){console.error(err);}};
+  es.onerror=()=>stopRun(false);
+}
+function stopRun(ok){
+  if(!running&&complete)return;
+  running=false; stopTimer(); if(es){es.close();es=null;}
+  if(ok){complete=true; setPhase('complete'); setRunBtn('replay'); setFoot('sealed'); $('badge').className='badge signed'; $('badge').textContent='● SIGNED';}
+  else{setRunBtn(complete?'replay':'idle'); setFoot(complete?'sealed':'idle');}
+}
+
+$('run').onclick=()=>{ if(running)return; run(currentCompany); };
+$('search').addEventListener('keydown',e=>{if(e.key==='Enter')run();});
+buildSpine(); buildChips();
+</script>
+</body>
+</html>

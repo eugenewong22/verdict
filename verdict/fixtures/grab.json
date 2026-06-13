@@ -1,0 +1,48 @@
+{
+  "ticker": "GRAB",
+  "name": "Grab Holdings",
+  "sector": "SEA super-app — mobility, deliveries, digital financial services",
+  "evidence": [
+    {"source": "Bright Data · Reuters", "title": "Grab posts first full-year adjusted EBITDA profit", "sentiment": "positive"},
+    {"source": "Bright Data · Bloomberg", "title": "On-demand GMV +18% YoY; mobility back above pre-COVID", "sentiment": "positive"},
+    {"source": "Bright Data · DealStreetAsia", "title": "GrabFin lending book scaling; digibank losses narrowing", "sentiment": "neutral"},
+    {"source": "Bright Data · The Edge", "title": "Incentive spend ticks up to defend share vs foodpanda exit markets", "sentiment": "negative"},
+    {"source": "Bright Data · company IR", "title": "FY25 revenue $3.0B, +19% YoY; $500M buyback authorised", "sentiment": "positive"}
+  ],
+  "earnings_video": {
+    "title": "Grab Holdings Q4 FY25 Earnings Call",
+    "timestamp": "00:21:47",
+    "quote": "We delivered our first full year of positive adjusted EBITDA, and we are now focused on durable, profitable growth and capital returns."
+  },
+  "analyst_steps": [
+    {"tool": "brightdata.search", "query": "Grab Q4 FY25 adjusted EBITDA segment profitability", "observation": "Deliveries + mobility both segment-EBITDA positive; group FCF inflecting"},
+    {"tool": "videodb.search", "query": "Grab incentive spend guidance 2026", "observation": "Mgmt signals disciplined incentives; take-rate up ~40bps QoQ"},
+    {"tool": "brightdata.search", "query": "GrabFin digibank GXBank losses 2025", "observation": "Fintech adj EBITDA loss narrowed ~35% YoY; deposit growth strong"},
+    {"tool": "brightdata.search", "query": "Grab buyback capital return FY25", "observation": "$500M buyback; net cash ~$5.5B supports returns"}
+  ],
+  "thesis": {
+    "recommendation": "BUY",
+    "conviction": "Medium",
+    "summary": "Grab has crossed into group profitability with both core segments EBITDA-positive and fintech losses shrinking fast. With ~$5.5B net cash and a fresh buyback, the story shifts from burn to capital return. Valuation is reasonable if incentive discipline holds.",
+    "risks": [
+      "Re-acceleration of incentive spend if competition returns in key markets",
+      "Digital bank (GXBank/Superbank) losses if deposit costs rise",
+      "Regulatory pressure on gig-worker classification across SEA"
+    ]
+  },
+  "valuation": {
+    "method": "Sum-of-the-parts (mobility + delivery + fintech) + EV/EBITDA",
+    "revenue_b": 3.0,
+    "growth": 0.19,
+    "ev_sales_multiple": 5.1,
+    "current_price_usd": 4.85,
+    "fair_value_usd": 6.10,
+    "series": [3.6, 3.9, 4.1, 4.0, 4.4, 5.2, 5.7, 6.1]
+  },
+  "nosana_receipt": {
+    "job": "embed-evidence-corpus",
+    "gpu": "A100 40GB (decentralised)",
+    "tx": "8mB4p...nosanaMainnet...2Lk",
+    "vectors": 1620
+  }
+}

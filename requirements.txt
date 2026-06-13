@@ -1,0 +1,6 @@
+fastapi
+uvicorn[standard]
+python-pptx
+openpyxl
+cryptography
+openai>=1.30

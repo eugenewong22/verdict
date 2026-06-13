@@ -1,0 +1,48 @@
+{
+  "ticker": "GOTO",
+  "name": "GoTo Group",
+  "sector": "Indonesia tech — Gojek (on-demand), Tokopedia/TikTok Shop JV, GoTo Financial",
+  "evidence": [
+    {"source": "Bright Data · Reuters", "title": "GoTo group adjusted EBITDA positive; cost cuts ahead of plan", "sentiment": "positive"},
+    {"source": "Bright Data · Bloomberg", "title": "TikTok-Tokopedia e-commerce JV scaling GMV post-merger", "sentiment": "positive"},
+    {"source": "Bright Data · Tech in Asia", "title": "GoPay standalone app gains traction; lending yields strong", "sentiment": "positive"},
+    {"source": "Bright Data · Nikkei", "title": "On-demand competition with Grab pressures mobility take-rate", "sentiment": "negative"},
+    {"source": "Bright Data · company IR", "title": "FY25 gross revenue Rp16.5T; share buyback extended", "sentiment": "neutral"}
+  ],
+  "earnings_video": {
+    "title": "GoTo Group FY25 Results Briefing",
+    "timestamp": "00:18:05",
+    "quote": "We achieved group adjusted EBITDA breakeven a quarter ahead of guidance, and GoPay is now our fastest-growing engagement driver."
+  },
+  "analyst_steps": [
+    {"tool": "brightdata.search", "query": "GoTo FY25 adjusted EBITDA cost rationalisation", "observation": "Group adj EBITDA positive; fixed-cost base cut ~30% over 2 years"},
+    {"tool": "videodb.search", "query": "TikTok Tokopedia JV GMV contribution GoTo", "observation": "JV monetisation improving; GoTo books e-commerce service fee, not losses"},
+    {"tool": "brightdata.search", "query": "GoPay standalone app users lending 2025", "observation": "GoPay MTU growth strong; consumer lending yields attractive, NPLs contained"},
+    {"tool": "brightdata.search", "query": "GoTo Gojek mobility competition Grab take rate", "observation": "Mobility take-rate under pressure; offset by fintech mix shift"}
+  ],
+  "thesis": {
+    "recommendation": "HOLD",
+    "conviction": "Medium",
+    "summary": "GoTo's cost discipline got it to EBITDA breakeven early, and offloading e-commerce losses into the TikTok JV de-risks the model. GoPay + lending is the real growth engine. But mobility competition with Grab caps near-term upside, so the risk/reward is balanced rather than compelling at current levels.",
+    "risks": [
+      "Mobility take-rate erosion from sustained Grab competition",
+      "Reliance on the TikTok-Tokopedia JV outside GoTo's full control",
+      "Rupiah volatility and Indonesian consumer-credit cycle risk"
+    ]
+  },
+  "valuation": {
+    "method": "EV/Gross-Revenue + fintech option value",
+    "revenue_b": 1.05,
+    "growth": 0.14,
+    "ev_sales_multiple": 3.6,
+    "current_price_usd": 0.061,
+    "fair_value_usd": 0.066,
+    "series": [0.052, 0.055, 0.058, 0.054, 0.057, 0.061, 0.064, 0.066]
+  },
+  "nosana_receipt": {
+    "job": "embed-evidence-corpus",
+    "gpu": "RTX 4090 (decentralised)",
+    "tx": "3kF9w...nosanaMainnet...7Vb",
+    "vectors": 1495
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "ticker": "SE",
+  "name": "Sea Limited",
+  "sector": "SEA tech — e-commerce (Shopee), digital entertainment (Garena), fintech (Monee)",
+  "evidence": [
+    {"source": "Bright Data · Reuters", "title": "Shopee GMV up 26% YoY in SEA; first full-year group profit", "sentiment": "positive"},
+    {"source": "Bright Data · Bloomberg", "title": "Garena Free Fire bookings stabilise after two-year decline", "sentiment": "neutral"},
+    {"source": "Bright Data · SEC 20-F", "title": "Monee (SeaMoney) loan book +60% YoY, NPLs steady at 1.2%", "sentiment": "positive"},
+    {"source": "Bright Data · TechInAsia", "title": "TikTok Shop intensifies price competition in Indonesia", "sentiment": "negative"},
+    {"source": "Bright Data · company IR", "title": "FY25 revenue $19.2B, +20% YoY; adj EBITDA $2.1B", "sentiment": "positive"}
+  ],
+  "earnings_video": {
+    "title": "Sea Ltd Q4 FY25 Earnings Call",
+    "timestamp": "00:14:32",
+    "quote": "Shopee reached positive adjusted EBITDA across every market, and we expect take-rate expansion to continue into FY26."
+  },
+  "analyst_steps": [
+    {"tool": "brightdata.search", "query": "Sea Limited Q4 FY25 results revenue margin", "observation": "Revenue $4.9B in Q4, group net profit positive for the first full year"},
+    {"tool": "videodb.search", "query": "Shopee take rate guidance margin", "observation": "Mgmt guides continued take-rate expansion; logistics cost per order down 11%"},
+    {"tool": "brightdata.search", "query": "Garena Free Fire DAU bookings 2025 trend", "observation": "Bookings stabilising; DAU re-accelerated in India relaunch"},
+    {"tool": "brightdata.search", "query": "TikTok Shop Indonesia competition Shopee share", "observation": "Competition real but Shopee defended share via Shopee Live + lower fees"}
+  ],
+  "thesis": {
+    "recommendation": "BUY",
+    "conviction": "Medium-High",
+    "summary": "Sea has hit a profitability inflection: Shopee is EBITDA-positive across all markets while Monee compounds at 60%+ with stable credit quality. Garena is no longer a drag. The market is still pricing peak-competition fears, leaving asymmetric upside as group margins expand.",
+    "risks": [
+      "Garena gaming revenue secular decline if Free Fire re-engagement stalls",
+      "TikTok Shop price competition compresses Shopee take-rate in Indonesia",
+      "FX translation risk across SEA currencies vs USD reporting"
+    ]
+  },
+  "valuation": {
+    "method": "EV/Sales + 3-stage DCF blend",
+    "revenue_b": 19.2,
+    "growth": 0.20,
+    "ev_sales_multiple": 3.2,
+    "current_price_usd": 96.5,
+    "fair_value_usd": 118.0,
+    "series": [72, 79, 85, 83, 90, 99, 108, 118]
+  },
+  "nosana_receipt": {
+    "job": "embed-evidence-corpus",
+    "gpu": "RTX 4090 (decentralised)",
+    "tx": "5xR2k...nosanaMainnet...9Qd",
+    "vectors": 1840
+  }
+}

@@ -1,0 +1,6 @@
+# Optional — only needed to flip integrations from MOCK to LIVE.
+# The base demo runs without any of these (they are lazy-imported).
+#   pip install -r requirements-live.txt
+brightdata-sdk
+videodb
+daytona

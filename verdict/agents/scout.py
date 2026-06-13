@@ -10,7 +10,7 @@ from ..integrations import brightdata, videodb
 
 async def run(company, fixture, ctx, emit) -> Envelope:
     if config.LIVE["brightdata"]:
-        r = await brightdata.search(f"{fixture['name']} latest quarterly results news", fixture, limit=5)
+        r = await brightdata.search(f"{fixture['name']} earnings revenue results news", fixture, limit=5)
         evidence, source = r["items"], r["source"]
     else:
         evidence, source = fixture["evidence"], "mock"
